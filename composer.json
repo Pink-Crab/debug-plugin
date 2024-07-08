@@ -1,0 +1,24 @@
+{
+    "name": "gq/debugging",
+    "type": "wordpress-plugin",
+    "description": "This is the base Perique theme with underscores. Part of PinkCrab",
+    "keywords": [
+        "WordPress",
+        "Themes"
+    ],
+    "homepage": "https://www.clappo.co.uk",
+    "license": "GPL-2.0-or-later",
+    "authors": [{
+        "name": "_s",
+        "homepage": "https://github.com/Automattic/_s/"
+    }],
+    "autoload": {
+        "psr-4": {
+            "GQ_DEBUGGING\\": "src/"
+        },
+        "files": ["src/Gateways/Always_Confirm.php"]
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^5.0"
+    }
+}
