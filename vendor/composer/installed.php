@@ -5,18 +5,18 @@
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '4a2f6d226e1849fde1ed2298ba6a74a12f0766b0',
-        'name' => 'gq/debugging',
-        'dev' => true,
+        'reference' => '66f100b3de6db28df8f32d845dbdc247ecca7987',
+        'name' => 'pinkcrab/debugging',
+        'dev' => false,
     ),
     'versions' => array(
-        'gq/debugging' => array(
+        'pinkcrab/debugging' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '4a2f6d226e1849fde1ed2298ba6a74a12f0766b0',
+            'reference' => '66f100b3de6db28df8f32d845dbdc247ecca7987',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-mbstring' => array(
@@ -26,7 +26,7 @@
             'install_path' => __DIR__ . '/../symfony/polyfill-mbstring',
             'aliases' => array(),
             'reference' => '85181ba99b2345b0ef10ce42ecac37612d9fd341',
-            'dev_requirement' => true,
+            'dev_requirement' => false,
         ),
         'symfony/polyfill-php80' => array(
             'pretty_version' => 'v1.31.0',
@@ -35,7 +35,7 @@
             'install_path' => __DIR__ . '/../symfony/polyfill-php80',
             'aliases' => array(),
             'reference' => '60328e362d4c2c802a54fcbf04f9d3fb892b4cf8',
-            'dev_requirement' => true,
+            'dev_requirement' => false,
         ),
         'symfony/var-dumper' => array(
             'pretty_version' => 'v5.4.43',
@@ -44,7 +44,7 @@
             'install_path' => __DIR__ . '/../symfony/var-dumper',
             'aliases' => array(),
             'reference' => '6be6a6a8af4818564e3726fc65cf936f34743cef',
-            'dev_requirement' => true,
+            'dev_requirement' => false,
         ),
     ),
 );
