@@ -12,12 +12,31 @@ Author URI: https://www.PinkCrab.co.uk
 require_once 'vendor/autoload.php';
 
 /**
- * Shows error messages rather than the critical errors screen.
+ * Checks if a request is likely from Rest API.
+ *
+ * @return boolean
+ */
+function pinkcrab_is_rest() {
+	return defined( 'REST_API_VERSION' ) && strpos( $_SERVER['REQUEST_URI'], '/wp-json/' ) !== false;
+}
+
+/**
+ * Shows a custom error message in place of the WSOD.
+ *
+ * Will show a styled view of the error when accessed via the browser.
+ * Will show a simple error message when accessed via AJAX or Rest.
+ *
+ * @param string $message The error message.
+ * @param array $error The error array.
  */
 add_filter(
 	'wp_php_error_args',
 	function ( $message, $error ) {
-		include 'views/wp-error.php';
+		if ( wp_doing_ajax() || pinkcrab_is_rest() ) {
+			include 'views/ajax-error.php';
+		} else {
+			include 'views/wp-error.php';
+		}
 	},
 	2,
 	10
@@ -32,7 +51,7 @@ add_filter(
  * @return void
  */
 function adump( ...$data ) {
-	if ( ! wp_doing_ajax() ) {
+	if ( ! wp_doing_ajax() && ! pinkcrab_is_rest() ) {
 		echo '<pre>';
 	}foreach ( $data as $item ) {
 		if ( is_null( $item ) ) {
@@ -45,7 +64,7 @@ function adump( ...$data ) {
 			print_r( $item );
 		}
 	}
-	if ( ! wp_doing_ajax() ) {
+	if ( ! wp_doing_ajax() && ! pinkcrab_is_rest() ) {
 		echo '</pre>';
 	}
 }
@@ -58,11 +77,11 @@ function adump( ...$data ) {
  * @return void
  */
 function adie( ...$data ) {
-	if ( ! wp_doing_ajax() ) {
+	if ( ! wp_doing_ajax() && ! pinkcrab_is_rest() ) {
 		echo '<pre>';
 	}
 	adump( $data );
-	if ( ! wp_doing_ajax() ) {
+	if ( ! wp_doing_ajax() && ! pinkcrab_is_rest() ) {
 		echo '</pre>';
 	}
 	die();
@@ -70,6 +89,7 @@ function adie( ...$data ) {
 
 /**
  * Shows all the enqueued scripts and styles in header, if set in url.
+ * ?show_enqueued
  */
 if ( ! empty( $_GET['show_enqueued'] ) ) {
 	add_action(
@@ -104,20 +124,27 @@ if ( ! empty( $_GET['show_enqueued'] ) ) {
  * So all of defined hooks if in url.
  * ?show_hooks=hook,hook2
  */
-if( ! empty( $_GET['show_hooks'] ) ) {
+if ( ! empty( $_GET['show_hooks'] ) ) {
 	add_action(
 		'wp_head',
 		function () {
 			$hooks = explode( ',', $_GET['show_hooks'] );
-			foreach( $hooks as $hook ) {
-				dump( array( 'hook' => $hook, 'callbacks' => $GLOBALS['wp_filter'][ $hook ] ) );
+			foreach ( $hooks as $hook ) {
+				dump(
+					array(
+						'hook'      => $hook,
+						'callbacks' => $GLOBALS['wp_filter'][ $hook ],
+					)
+				);
 			}
 		}
 	);
 }
 
 /**
- * Logger.
+ * Custom Logger.
+ * 
+ * Saves to wp-content/pc_debug.log
  *
  * @param mixed ...$data
  *
@@ -146,6 +173,13 @@ function pclog( $data, string $type = 'log' ) {
 	file_put_contents( $log_file, $entry . $log );
 }
 
+/**
+ * Write to the PHP error log.
+ *
+ * @param mixed $log
+ *
+ * @return void
+ */
 if ( ! function_exists( 'write_log' ) ) {
 	function write_log( $log ) {
 		if ( is_array( $log ) || is_object( $log ) ) {
