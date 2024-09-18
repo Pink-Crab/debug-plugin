@@ -60,6 +60,16 @@ pclog($var);
 ```
 > Will only create the file if it does not exist.
 
+### pinkcrab_is_rest()
+
+This function will return true if the current request is a rest request.
+
+```php
+if(pinkcrab_is_rest()){
+    // Do something
+}
+```
+
 ## URL Parameters
 
 ### ?show_enqueue
