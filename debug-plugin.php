@@ -4,11 +4,10 @@ Plugin Name: PinkCrab Debugging Plugin
 Plugin URI: https://www.PinkCrab.co.uk
 Description: A selection of debugging tools. Should not really be used on production sites. Contains dump(), dd(), adump() & adie() plus custom error messages over WSOD
 Author: PinkCrab
-Version: 0.1.0
+Version: 1.0.0
 Author URI: https://www.PinkCrab.co.uk
 */
 
-use GQ_DEBUGGING\Gateways\Always_Confirm;
 
 require_once 'vendor/autoload.php';
 
@@ -17,7 +16,7 @@ require_once 'vendor/autoload.php';
  */
 add_filter(
 	'wp_php_error_args',
-	function( $message, $error ) {
+	function ( $message, $error ) {
 		include 'views/wp-error.php';
 	},
 	2,
@@ -75,7 +74,7 @@ function adie( ...$data ) {
 if ( ! empty( $_GET['show_enqueued'] ) && $_GET['show_enqueued'] === 'true' ) {
 	add_action(
 		'wp_head',
-		function() {
+		function () {
 			// Print all loaded Scripts
 			global $wp_scripts;
 			global $wp_styles;
@@ -84,13 +83,13 @@ if ( ! empty( $_GET['show_enqueued'] ) && $_GET['show_enqueued'] === 'true' ) {
 				array(
 					'DEBUG'   => 'Showing enqueued scripts/styles (url.com?show_enqueued=true)',
 					'styles'  => array_map(
-						function( $e ) use ( $wp_styles ) {
+						function ( $e ) use ( $wp_styles ) {
 							return $wp_styles->registered[ $e ];
 						},
 						$wp_styles->queue
 					),
 					'scripts' => array_map(
-						function( $e ) use ( $wp_scripts ) {
+						function ( $e ) use ( $wp_scripts ) {
 							return $wp_scripts->registered[ $e ];
 						},
 						$wp_scripts->queue
@@ -101,16 +100,58 @@ if ( ! empty( $_GET['show_enqueued'] ) && $_GET['show_enqueued'] === 'true' ) {
 	);
 }
 
+/**
+ * So all of defined hooks if in url.
+ * ?show_hooks=hook,hook2
+ */
+if( ! empty( $_GET['show_hooks'] ) ) {
+	add_action(
+		'wp_head',
+		function () {
+			$hooks = explode( ',', $_GET['show_hooks'] );
+			foreach( $hooks as $hook ) {
+				dump( array( 'hook' => $hook, 'callbacks' => $GLOBALS['wp_filter'][ $hook ] ) );
+			}
+		}
+	);
+}
 
-// Activate Gateways
-// dump( Always_Confirm::gateway() );
-// add_action( 'plugins_loaded', 'GQ_DEBUGGING\Gateways\Always_Confirm_Gateway' );
-add_filter(
-	'woocommerce_payment_gateways',
-	function( $gateways ) {
-		// $gateways[] = Alway_Confirm_Gateway::class;
-		// dump( $gateways );
-		// dump( function_exists( 'GQ_DEBUGGING\Gateways\Always_Confirm_Gateway' ) );
-		return $gateways;
+/**
+ * Logger.
+ *
+ * @param mixed ...$data
+ *
+ * @return void
+ */
+function pclog( $data, string $type = 'log' ) {
+	$log_file = ABSPATH . 'wp-content/pc_debug.log';
+	// If the custom log file is not set, set it.
+	if ( ! file_exists( $log_file ) ) {
+		// Create the log file.
+		file_put_contents( $log_file, '' );
 	}
-);
+
+	// Get the current log file.
+	$log = file_get_contents( $log_file );
+
+	// Add the new data to the log.
+	$entry = sprintf(
+		'[%s] %s: %s' . PHP_EOL,
+		date( 'Y-m-d H:i:s' ),
+		$type,
+		print_r( $data, true )
+	);
+
+	// Add entry to the start of the log.
+	file_put_contents( $log_file, $entry . $log );
+}
+
+if ( ! function_exists( 'write_log' ) ) {
+	function write_log( $log ) {
+		if ( is_array( $log ) || is_object( $log ) ) {
+			error_log( print_r( $log, true ) );
+		} else {
+			error_log( $log );
+		}
+	}
+}
