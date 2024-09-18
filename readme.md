@@ -2,6 +2,8 @@
 
 A wordpress plugin to help with debugging and development.
 
+**[Download the latest release](https://github.com/Pink-Crab/Debug-Plugin/releases/latest/download/debug-plugin.zip)**
+
 ## Functions.
 
 ### dump(...$data) 

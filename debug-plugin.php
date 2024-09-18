@@ -71,7 +71,7 @@ function adie( ...$data ) {
 /**
  * Shows all the enqueued scripts and styles in header, if set in url.
  */
-if ( ! empty( $_GET['show_enqueued'] ) && $_GET['show_enqueued'] === 'true' ) {
+if ( ! empty( $_GET['show_enqueued'] ) ) {
 	add_action(
 		'wp_head',
 		function () {
