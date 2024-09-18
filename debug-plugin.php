@@ -101,6 +101,22 @@ if ( ! empty( $_GET['show_enqueued'] ) && $_GET['show_enqueued'] === 'true' ) {
 }
 
 /**
+ * So all of defined hooks if in url.
+ * ?show_hooks=hook,hook2
+ */
+if( ! empty( $_GET['show_hooks'] ) ) {
+	add_action(
+		'wp_head',
+		function () {
+			$hooks = explode( ',', $_GET['show_hooks'] );
+			foreach( $hooks as $hook ) {
+				dump( array( 'hook' => $hook, 'callbacks' => $GLOBALS['wp_filter'][ $hook ] ) );
+			}
+		}
+	);
+}
+
+/**
  * Logger.
  *
  * @param mixed ...$data
