@@ -259,6 +259,6 @@
             "install-path": "../symfony/var-dumper"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }
