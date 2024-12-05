@@ -72,10 +72,10 @@ if(pinkcrab_is_rest()){
 
 ## URL Parameters
 
-### ?show_enqueue
+### ?pc_show_enqueue
 
 This will output all the scripts and styles that have been enqueued on the page.
 
-### ?show_hooks=hook,hook2
+### ?pc_show_hooks=hook,hook2
 
 This will output all the hooks that have been added to the page. You can pass multiple hooks by comma separating them.
