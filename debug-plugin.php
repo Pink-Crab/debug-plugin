@@ -4,7 +4,7 @@ Plugin Name: PinkCrab Debugging Plugin
 Plugin URI: https://www.PinkCrab.co.uk
 Description: A selection of debugging tools. Should not really be used on production sites. Contains dump(), dd(), adump() & adie() plus custom error messages over WSOD
 Author: PinkCrab
-Version: 1.0.0
+Version: 1.1.0
 Author URI: https://www.PinkCrab.co.uk
 */
 
@@ -323,5 +323,3 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		}
 	);
 }
-
-add_action('init', fn()=> throw new Exception('Test Error Message'));
