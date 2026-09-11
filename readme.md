@@ -70,6 +70,14 @@ if(pinkcrab_is_rest()){
 }
 ```
 
+### formatBytes($bytes, $precision = 2)
+
+Formats a byte count as a readable string (B, KB, MB, GB, TB).
+
+```php
+echo formatBytes(1536); // 1.50 KB
+```
+
 ## URL Parameters
 
 ### ?pc_show_enqueue
