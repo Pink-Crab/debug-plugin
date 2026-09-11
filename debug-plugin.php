@@ -4,7 +4,7 @@ Plugin Name: PinkCrab Debugging Plugin
 Plugin URI: https://www.PinkCrab.co.uk
 Description: A selection of debugging tools. Should not really be used on production sites. Contains dump(), dd(), adump() & adie() plus custom error messages over WSOD
 Author: PinkCrab
-Version: 1.1.0
+Version: 1.2.0
 Author URI: https://www.PinkCrab.co.uk
 */
 
@@ -24,7 +24,7 @@ function pinkcrab_is_rest() {
  * Shows a custom error message in place of the WSOD.
  *
  * Will show a styled view of the error when accessed via the browser.
- * Will show a simple error message when accessed via AJAX or Rest.
+ * Will show a simple error message when accessed via AJAX, Rest or WP CLI.
  *
  * @param string $message The error message.
  * @param array $error The error array.
@@ -34,6 +34,8 @@ $r = add_filter(
 	function ( $message, $error ) {
 		if ( wp_doing_ajax() || pinkcrab_is_rest() ) {
 			include 'views/ajax-error.php';
+		} elseif ( defined( 'WP_CLI' ) && WP_CLI ) {
+			include 'views/cli-error.php';
 		} else {
 			include 'views/web-error.php';
 		}
@@ -57,7 +59,7 @@ add_action(
 			'manage_options',
 			'pc_debug_log',
 			function () {
-				$log_file = ABSPATH . 'wp-content/pc_debug.log';
+				$log_file = WP_CONTENT_DIR . '/pc_debug.log';
 				$log      = explode( "\x1F", file_get_contents( $log_file ) );
 
 				require 'views/log-viewer.php';
@@ -176,7 +178,7 @@ if ( ! empty( $_GET['pc_show_hooks'] ) ) {
  * @return void
  */
 function pclog( $data, string $type = 'log' ) {
-	$log_file = ABSPATH . 'wp-content/pc_debug.log';
+	$log_file = WP_CONTENT_DIR . '/pc_debug.log';
 	// If the custom log file is not set, set it.
 	if ( ! file_exists( $log_file ) ) {
 		// Create the log file.
@@ -215,6 +217,22 @@ if ( ! function_exists( 'write_log' ) ) {
 		} else {
 			error_log( $log );
 		}
+	}
+}
+
+if ( ! function_exists( 'formatBytes' ) ) {
+	/**
+	 * Formats a byte count as a human readable string (B, KB, MB, GB, TB).
+	 *
+	 * @param int|float $bytes
+	 * @param int       $precision
+	 *
+	 * @return string
+	 */
+	function formatBytes( $bytes, $precision = 2 ) {
+		$units = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+		$power = $bytes > 0 ? floor( log( $bytes, 1024 ) ) : 0;
+		return number_format( $bytes / pow( 1024, $power ), $precision ) . ' ' . $units[ $power ];
 	}
 }
 

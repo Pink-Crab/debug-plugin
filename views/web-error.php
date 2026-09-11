@@ -13,13 +13,14 @@ $stack_trace = array_filter(
 		return $message !== 'Stack trace:';
 	}
 );
-// Remove root from paths to cut down on size.
-// $stack_trace = array_map(
-// 	function( $message ) {
-// 		return str_replace( get_home_path(), '../', $message );
-// 	},
-// 	$stack_trace
-// );
+// Remove root from paths to cut down on size. get_home_path() is admin only, so fall back to ABSPATH.
+$root_path   = function_exists( 'get_home_path' ) ? get_home_path() : ABSPATH;
+$stack_trace = array_map(
+	function( $message ) use ( $root_path ) {
+		return str_replace( $root_path, '../', $message );
+	},
+	$stack_trace
+);
 ?>
 <style>
 #pinkcrab-error {
